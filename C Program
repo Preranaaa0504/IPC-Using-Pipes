@@ -1,0 +1,32 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/types.h>
+#include<sys/wait.h>
+int main()
+{
+    int des[2];
+    char string1[20]="Hello";
+    char string2[20];
+    if(pipe(des)==-1) {
+        printf("Failure in Pipe creation");
+    }
+    pid_t num_pid = fork();
+// Child process
+    if(num_pid == 0) {
+        close(des[1]);
+        sleep(5);
+        read(des[0],string2,10);
+        printf("Child receives: %s\n",string2);
+    }
+// Parent process
+    else {
+        close(des[0]);
+        write(des[1],string1,6);
+        printf("Parent send: %s\n",string1);
+        wait(NULL);
+
+        printf("\nParent process terminated");
+    }
+    return 0;
+}
